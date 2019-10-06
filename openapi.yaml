@@ -1,0 +1,590 @@
+openapi: 3.0.0
+
+info:
+  title: Spott API
+  version: 1.0.0
+  description: Spott API documentation.
+  contact:
+    name: Spott, Inc.
+    url: https://spott.dev
+    email: hi@spott.dev
+
+servers:
+  - url: https://api.spott.dev
+    description: Production API server.
+
+paths:
+  /places:
+    get:
+      operationId: getPlaces
+      security:
+        - ApiKeyAuth: []
+      tags:
+        - Places
+      summary: Returns a list of Places.
+      description: >
+        Returns a list of places (either countries, cities or administrative divisions) matching a query and filtered by properties.
+      parameters:
+        - name: q
+          in: query
+          description: Query string to find places with a similar name.
+          required: false
+          schema:
+            type: string
+        - $ref: '#/components/parameters/type'
+        - $ref: '#/components/parameters/country'
+        - $ref: '#/components/parameters/adminDivision1'
+        - $ref: '#/components/parameters/adminDivision2'
+        - $ref: '#/components/parameters/latitude'
+        - $ref: '#/components/parameters/longitude'
+        - $ref: '#/components/parameters/accuracyRadiusKm'
+        - $ref: '#/components/parameters/language'
+        - $ref: '#/components/parameters/skip'
+        - $ref: '#/components/parameters/limit'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  oneOf:
+                    - $ref: '#/components/schemas/City'
+                    - $ref: '#/components/schemas/AdminDivision1'
+                    - $ref: '#/components/schemas/AdminDivision2'
+                    - $ref: '#/components/schemas/Country'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /places/autocomplete:
+    get:
+      operationId: autocompletePlaces
+      security:
+        - ApiKeyAuth: []
+      tags:
+        - Places
+      summary: Autocomplete places.
+      description: >
+        Returns a list of places matching a prefix and specified filter properties. Useful to create "search as you type" inputs.
+      parameters:
+        - name: q
+          in: query
+          description: Query string to find places which name starts with this prefix.
+          required: false
+          schema:
+            type: string
+        - $ref: '#/components/parameters/type'
+        - $ref: '#/components/parameters/country'
+        - $ref: '#/components/parameters/adminDivision1'
+        - $ref: '#/components/parameters/adminDivision2'
+        - $ref: '#/components/parameters/latitude'
+        - $ref: '#/components/parameters/longitude'
+        - $ref: '#/components/parameters/accuracyRadiusKm'
+        - $ref: '#/components/parameters/language'
+        - $ref: '#/components/parameters/skip'
+        - $ref: '#/components/parameters/limit'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  oneOf:
+                    - $ref: '#/components/schemas/City'
+                    - $ref: '#/components/schemas/AdminDivision1'
+                    - $ref: '#/components/schemas/AdminDivision2'
+                    - $ref: '#/components/schemas/Country'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /places/{id}:
+    get:
+      operationId: getPlaceById
+      security:
+        - ApiKeyAuth: []
+      tags:
+        - Places
+      summary: Get place by ID
+      description: >
+        Returns a single Place identified by an ID.
+      parameters:
+        - name: id
+          in: path
+          description: ID of the Place.
+          required: true
+          schema:
+            type: string
+        - $ref: '#/components/parameters/language'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/City'
+                  - $ref: '#/components/schemas/AdminDivision1'
+                  - $ref: '#/components/schemas/AdminDivision2'
+                  - $ref: '#/components/schemas/Country'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /places/geoname-id/{geonameId}:
+    get:
+      operationId: getPlaceByGeonameId
+      security:
+        - ApiKeyAuth: []
+      tags:
+        - Places
+      summary: Get place by Geoname ID.
+      description: >
+        Returns a single Place identified by a Geoname ID.
+      parameters:
+        - name: geonameId
+          in: path
+          description: Geoname ID of the place.
+          required: true
+          schema:
+            type: string
+        - $ref: '#/components/parameters/language'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/City'
+                  - $ref: '#/components/schemas/AdminDivision1'
+                  - $ref: '#/components/schemas/AdminDivision2'
+                  - $ref: '#/components/schemas/Country'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /places/ip/{ip}:
+    get:
+      operationId: getPlaceByIp
+      security:
+        - ApiKeyAuth: []
+      tags:
+        - Places
+      summary: Returns the Place where a given IP Address is located.
+      description: >
+        Returns the Place where a given IP Address is located. Returns "Not Found" error when no place is related to the IP.
+        When sending '127.0.0.1' or '0.0.0.0' IP Addresses it will return the Place from the request was performed.
+      parameters:
+        - name: ip
+          in: path
+          description: IP Address (v4 and v6 are supported).
+          required: true
+          schema:
+            oneOf:
+              - type: string
+                format: ipv4
+              - type: string
+                format: ipv6
+        - $ref: '#/components/parameters/language'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/City'
+                  - $ref: '#/components/schemas/AdminDivision1'
+                  - $ref: '#/components/schemas/AdminDivision2'
+                  - $ref: '#/components/schemas/Country'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /places/ip/me:
+    get:
+      operationId: getPlaceByMyIp
+      security:
+        - ApiKeyAuth: []
+      tags:
+        - Places
+      summary: Get place by my IP
+      description: >
+        Returns the place related to the IP where the request was performed. Returns "Not Found" error when no place is related to the IP.
+      parameters:
+        - $ref: '#/components/parameters/language'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/City'
+                  - $ref: '#/components/schemas/AdminDivision1'
+                  - $ref: '#/components/schemas/AdminDivision2'
+                  - $ref: '#/components/schemas/Country'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+components:
+  schemas:
+    Id:
+      description: Unique identificator given by Spott.
+      type: string
+    GeonameId:
+      description: Unique identificator given by GeoNames.
+      type: integer
+      format: int64
+    Type:
+      description: The classification of the place.
+      type: string
+      enum:
+        - COUNTRY
+        - ADMIN_DIVISION_1
+        - ADMIN_DIVISION_2
+        - CITY
+    Name:
+      description: Default name of the place (usually in English). This property always has a value.
+      type: string
+    LocalizedName:
+      description: Localized name of the place in the requested language. This property is only present when parameter "language" is specified. It's null when translation is not available.
+      type: string
+    Population:
+      description: The approximate population living in the place.
+      type: integer
+      format: int64
+    Elevation:
+      description: The approximate elevation from sea level. Value is expressed in meters.
+      type: integer
+      format: int64
+    Coordinates:
+      description: The geographic coordinates where the place is located.
+      type: object
+      properties:
+        latitude:
+          description: Latitude component from the geographic coordinates of the place.
+          type: number
+          minimum: -90.0
+          maximum: 90.0
+        longitude:
+          description: Longitude component from the geographic coordinates of the place.
+          type: number
+          minimum: -180.0
+          maximum: 180.0
+    TimezoneId:
+      description: Time zone associated to the place. This property is null for countries since they may have multiple.
+      type: string
+    Score:
+      description: Calculated score used to sort results by relevance. This property is only present in results of endpoints that return a list.
+      type: number
+    Iso2:
+      description: ISO 3166-1 Alpha-2 code of the country.
+      type: string
+    Iso3:
+      description: ISO 3166-1 Alpha-3 code of the country.
+      type: string
+    IsoNumeric:
+      description: ISO 3166-1 Numeric code of the country.
+      type: string
+    ContinentId:
+      description: Id of the continent where the country is located. Valids are "AF" (Africa), "AS" (Asia), "EU" (Europe), "NA" (North America), "OC" (Oceania), "SA" (South America) and "AN" (Antarctica).
+      type: string
+    Domain:
+      description: >
+        [Top-level domain](https://en.wikipedia.org/wiki/List_of_Internet_top-level_domains#Country_code_top-level_domains) of the country.
+      type: string
+    AreaSqKm:
+      description: Total area of the country. Expressed in squared kilometers.
+      type: number
+    CurrencyCode:
+      description: Code of the official currency of the country.
+      type: string
+    CurrencyName:
+      description: Name of the official currency of the country.
+      type: string
+    PostalCodeFormat:
+      description: Format of the postal codes used in the country.
+      type: string
+    PostalCodeRegex:
+      description: Regular expression to validate the postal codes used in the country.
+      type: string
+    PhoneCodes:
+      description: >
+        A list of the international phone codes to call a number in the country.
+      type: array
+      items:
+        type: string
+    NeighbourCountryIds:
+      description: A list of ids of the countries that share border with this one (neighbours).
+      type: array
+      items:
+        type: string
+    Languages:
+      description: A list of [languages](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) spoken in the country.
+      type: array
+      items:
+        type: string
+    Locales:
+      description: A list of [locales](https://en.wikipedia.org/wiki/Locale_(computer_software)) (language + region) used in the country.
+      type: array
+      items:
+        type: string
+    RelatedPlace:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/Id'
+        geonameId:
+          $ref: '#/components/schemas/GeonameId'
+        name:
+          $ref: '#/components/schemas/Name'
+        localizedName:
+          $ref: '#/components/schemas/LocalizedName'
+    City:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/Id'
+        geonameId:
+          $ref: '#/components/schemas/GeonameId'
+        type:
+          $ref: '#/components/schemas/Type'
+        name:
+          $ref: '#/components/schemas/Name'
+        localizedName:
+          $ref: '#/components/schemas/LocalizedName'
+        population:
+          $ref: '#/components/schemas/Population'
+        elevation:
+          $ref: '#/components/schemas/Elevation'
+        coordinates:
+          $ref: '#/components/schemas/Coordinates'
+        timezoneId:
+          $ref: '#/components/schemas/TimezoneId'
+        adminDivision1:
+          $ref: '#/components/schemas/RelatedPlace'
+        adminDivision2:
+          $ref: '#/components/schemas/RelatedPlace'
+        country:
+          $ref: '#/components/schemas/RelatedPlace'
+        score:
+          $ref: '#/components/schemas/Score'
+    Country:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/Id'
+        geonameId:
+          $ref: '#/components/schemas/GeonameId'
+        type:
+          $ref: '#/components/schemas/Type'
+        name:
+          $ref: '#/components/schemas/Name'
+        localizedName:
+          $ref: '#/components/schemas/LocalizedName'
+        population:
+          $ref: '#/components/schemas/Population'
+        elevation:
+          $ref: '#/components/schemas/Elevation'
+        coordinates:
+          $ref: '#/components/schemas/Coordinates'
+        timezoneId:
+          $ref: '#/components/schemas/TimezoneId'
+        score:
+          $ref: '#/components/schemas/Score'
+        iso2:
+          $ref: '#/components/schemas/Iso2'
+        iso3:
+          $ref: '#/components/schemas/Iso3'
+        isoNumeric:
+          $ref: '#/components/schemas/IsoNumeric'
+        continentId:
+          $ref: '#/components/schemas/ContinentId'
+        domain:
+          $ref: '#/components/schemas/Domain'
+        areaSqKm:
+          $ref: '#/components/schemas/AreaSqKm'
+        currencyCode:
+          $ref: '#/components/schemas/CurrencyCode'
+        currencyName:
+          $ref: '#/components/schemas/CurrencyName'
+        postalCodeFormat:
+          $ref: '#/components/schemas/PostalCodeFormat'
+        postalCodeRegex:
+          $ref: '#/components/schemas/PostalCodeRegex'
+        phoneCodes:
+          $ref: '#/components/schemas/PhoneCodes'
+        neighbourCountryIds:
+          $ref: '#/components/schemas/NeighbourCountryIds'
+        languages:
+          $ref: '#/components/schemas/Languages'
+        locales:
+          $ref: '#/components/schemas/Locales'
+    AdminDivision1:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/Id'
+        geonameId:
+          $ref: '#/components/schemas/GeonameId'
+        type:
+          $ref: '#/components/schemas/Type'
+        name:
+          $ref: '#/components/schemas/Name'
+        localizedName:
+          $ref: '#/components/schemas/LocalizedName'
+        population:
+          $ref: '#/components/schemas/Population'
+        elevation:
+          $ref: '#/components/schemas/Elevation'
+        coordinates:
+          $ref: '#/components/schemas/Coordinates'
+        timezoneId:
+          $ref: '#/components/schemas/TimezoneId'
+        country:
+          $ref: '#/components/schemas/RelatedPlace'
+        score:
+          $ref: '#/components/schemas/Score'
+    AdminDivision2:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/Id'
+        geonameId:
+          $ref: '#/components/schemas/GeonameId'
+        type:
+          $ref: '#/components/schemas/Type'
+        name:
+          $ref: '#/components/schemas/Name'
+        localizedName:
+          $ref: '#/components/schemas/LocalizedName'
+        population:
+          $ref: '#/components/schemas/Population'
+        elevation:
+          $ref: '#/components/schemas/Elevation'
+        coordinates:
+          $ref: '#/components/schemas/Coordinates'
+        timezoneId:
+          $ref: '#/components/schemas/TimezoneId'
+        adminDivision1:
+          $ref: '#/components/schemas/RelatedPlace'
+        country:
+          $ref: '#/components/schemas/RelatedPlace'
+        score:
+          $ref: '#/components/schemas/Score'
+    Error:
+      type: object
+      properties:
+        code:
+          description: Error identifier.
+          type: string
+        message:
+          description: A message to provide more information about the error.
+          type: string
+  parameters:
+    language:
+      name: language
+      in: query
+      description: Specifies a language (ISO 639-1) to get the localized name of the place. If translation is not available, "localizedName" property will be null.
+      required: false
+      schema:
+        type: string
+        enum: [ar, bg, de, en, eo, es, fa, fr, id, it, ja, kk, ko, nl, pl, pt, ru, sr, uk, ur, zh]
+    type:
+      name: type
+      in: query
+      description: Filters places by their "type". It's possible to specify multiple values separating them with commas. Valid types are CITY, ADMIN_DIVISION_1, ADMIN_DIVISION_2 and COUNTRY.
+      required: false
+      schema:
+        type: string
+        enum:
+          - COUNTRY
+          - ADMIN_DIVISION_1
+          - ADMIN_DIVISION_2
+          - CITY
+    country:
+      name: country
+      in: query
+      description: Filters places by their country "id". It's possible to specify multiple values separating them with commas (Ex. ?country=US,CA,MX).
+      required: false
+      schema:
+        type: string
+    adminDivision1:
+      name: adminDivision1
+      in: query
+      description: Filters places by their adminDivision1 "id". It's possible to specify multiple values separating them with commas (Ex. ?country=US.CA,US.DE).
+      required: false
+      schema:
+        type: string
+    adminDivision2:
+      name: adminDivision2
+      in: query
+      description: Filters places by their adminDivision2 "id". It's possible to specify multiple values separating them with commas.
+      required: false
+      schema:
+        type: string
+    latitude:
+      name: latitude
+      in: query
+      description: Latitude component of a coordinates set to filter places by their location. This parameter is ignored if "longitude" is not specified.
+      required: false
+      schema:
+        type: number
+        minimum: -90
+        maximum: 90
+    longitude:
+      name: longitude
+      in: query
+      description: Longitude component of a coordinates set to filter places by their location. This parameter is ignored if "latitude" is not specified.
+      required: false
+      schema:
+        type: number
+        minimum: -180
+        maximum: 180
+    accuracyRadiusKm:
+      name: accuracyRadiusKm
+      in: query
+      description: Maximum radius from the point specified by "latitude" and "longitude" to filter places located within the area. The value must be expressed in Kilometers. Defaults to 100km.
+      required: false
+      schema:
+        type: number
+        minimum: 0
+    skip:
+      name: skip
+      in: query
+      description: Amount of places to ignore before beginning to return results. Used together with "limit" to paginate results. Defaults to 0.
+      required: false
+      schema:
+        type: number
+        minimum: 0
+    limit:
+      name: limit
+      in: query
+      description: Maximum number of places to return. Used together with "skip" to paginate results. Defaults to 10, maximum is 100.
+      required: false
+      schema:
+        type: number
+        minimum: 0
+        maximum: 100
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+  responses:
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
