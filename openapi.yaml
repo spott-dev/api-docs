@@ -233,10 +233,10 @@ paths:
 components:
   schemas:
     Id:
-      description: Unique identificator given by Spott.
+      description: Unique identifier  given by Spott.
       type: string
     GeonameId:
-      description: Unique identificator given by GeoNames.
+      description: Unique identifier  given by GeoNames.
       type: integer
       format: int64
     Type:
@@ -291,7 +291,7 @@ components:
       description: ISO 3166-1 Numeric code of the country.
       type: string
     ContinentId:
-      description: Id of the continent where the country is located. Valids are "AF" (Africa), "AS" (Asia), "EU" (Europe), "NA" (North America), "OC" (Oceania), "SA" (South America) and "AN" (Antarctica).
+      description: Id of the continent where the country is located. Valid ones are "AF" (Africa), "AS" (Asia), "EU" (Europe), "NA" (North America), "OC" (Oceania), "SA" (South America) and "AN" (Antarctica).
       type: string
     Domain:
       description: >
