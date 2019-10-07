@@ -151,7 +151,7 @@ However, depending on the ISP there's no always enough data to calcuate the city
 
 Spott offers a Free plan with up to 10,000 requests per month to any endpoint.
 
-Unfortunately RapidAPI will require your credit card details to subscribe to our Free plan; that's something we can't change. However, since Free plan is hard limited to 10,000 request, **be confident neither Spott or RapidAPI will change anything** unless you upgrage to a Paid plan.
+Unfortunately RapidAPI will require your credit card details to subscribe to our Free plan; that's something we can't change. However, since Free plan is hard limited to 10,000 request, **be confident neither Spott or RapidAPI will change anything** unless you upgrade to a Paid plan.
 
 ## Data
 
