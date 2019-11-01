@@ -211,7 +211,7 @@ paths:
         - Places
       summary: Get place by my IP
       description: >
-        Returns the place related to the IP where the request was performed. Returns "Not Found" error when no place is related to the IP.
+        Returns the place related to the IP where the request comes from. Returns "Not Found" error when no place is related to the IP.
       parameters:
         - $ref: '#/components/parameters/language'
       responses:
@@ -489,7 +489,7 @@ components:
     language:
       name: language
       in: query
-      description: Specifies a language (ISO 639-1) to get the localized name of the place. If translation is not available, "localizedName" property will be null.
+      description: Specifies a language (ISO 639-1) to get the localized name of the place. If the translation is not available, "localizedName" property will be null.
       required: false
       schema:
         type: string

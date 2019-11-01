@@ -10,6 +10,13 @@ With Spott you'll be able to:
 
 We'd love to hear what are you using Spott for, or any idea to make it better.
 
+## SDKs
+
+Use our SDKs to make your integration easier:
+
+* [NodeJS](https://www.npmjs.com/package/spott-nodejs-sdk)
+
+
 ## Authentication
 
 To access Spott you need to do it through RapidAPI. It's very easy, just:
