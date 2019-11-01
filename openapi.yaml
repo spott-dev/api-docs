@@ -233,10 +233,10 @@ paths:
 components:
   schemas:
     Id:
-      description: Unique identifier  given by Spott.
+      description: Unique identifier given by Spott.
       type: string
     GeonameId:
-      description: Unique identifier  given by GeoNames.
+      description: Unique identifier given by GeoNames.
       type: integer
       format: int64
     Type:
