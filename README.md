@@ -12,7 +12,7 @@ We'd love to hear what are you using Spott for, or any idea to make it better.
 
 ## SDKs
 
-Use our SDKs to make your integration easier:
+Use our SDKs to make the integration easier:
 
 * [NodeJS](https://www.npmjs.com/package/spott-nodejs-sdk)
 
@@ -38,7 +38,7 @@ All places returned by Spott might have the following properties.
 |`geonameId`| Integer | Unique identifier given by [GeoNames](https://www.geonames.org). |
 |`type`| String | The classification of the place. Possible values are: `CITY`, `ADMIN_DIVISION_1`, `ADMIN_DIVISION_2` and `COUNTRY` |
 |`name`| String | Default name of the place (usually in English). This property always has a value. |
-|`localizedName`| String | Localized name of the place in the requested language. This property is only present when parameter `language` is specified. It's `null` when translation is not available. |
+|`localizedName`| String | Localized name of the place in the requested language. This property is only present when parameter `language` is specified. It's `null` when the translation is not available. |
 |`population`| Integer | The approximate population living in the place. |
 |`elevation`| Float | The approximate elevation from sea level. Value is expressed in meters. |
 |`coordinates`| Object | The geographic coordinates where the place is located. |
